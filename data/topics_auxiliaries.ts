@@ -1,4 +1,3 @@
-
 import { Polarity } from '../types.ts';
 
 export const auxiliariesTopic = {
@@ -37,6 +36,10 @@ export const auxiliariesTopic = {
     {
       title: "The Time Travel Rule",
       text: "If the action happened yesterday (Past Tense - ed or irregular), always summon DID. It doesn't matter who the person is."
+    },
+    {
+      title: "The Stealth Negatives",
+      text: "Words like 'Never', 'Rarely', 'Hardly', and 'Seldom' make the sentence negative ALREADY. This means the tag must be positive! (e.g., He rarely smiles, does he?)"
     },
     {
       title: "The Visible Ghost",

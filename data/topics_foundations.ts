@@ -1,4 +1,3 @@
-
 import { Polarity } from '../types.ts';
 
 export const foundationsTopic = {
@@ -36,8 +35,12 @@ export const foundationsTopic = {
       text: "Tags are lazy. They never use names like 'Mary' or 'The Dog'. They only use pronouns: he, she, it, or they."
     },
     {
-      title: "The Comma Separator",
-      text: "A tag is an afterthought. Always separate the main sentence and the tag with a comma."
+      title: "The 'I Am' Exception",
+      text: "This is a weird one! 'I am happy' flips to 'aren't I?'. We never say 'amn't I'—it just doesn't exist in standard English!"
+    },
+    {
+      title: "The Crowds Rule",
+      text: "When a sentence starts with 'Everyone', 'Someone', or 'Nobody', the tag always uses 'they'. (e.g., Everyone is here, aren't they?)"
     }
   ],
 

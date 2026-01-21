@@ -1,4 +1,3 @@
-
 import { Polarity } from '../types.ts';
 
 export const modalsTopic = {
@@ -34,12 +33,20 @@ export const modalsTopic = {
 
   proTips: [
     {
-      title: "The Spelling Trap",
-      text: "English is weird! The negative of 'Will' is 'Won't' (not 'willn't'). The negative of 'Shall' is 'Shan't'."
+      title: "Suggestions with Let's",
+      text: "When you start with 'Let's' (Let us), the tag is always 'shall we?'. It's an invitation to join the action!"
     },
     {
-      title: "No 'Do' Allowed",
-      text: "Never use 'Do' or 'Does' with true modals. 'He can swim, doesn't he?' is incorrect. It must be 'can't he?'."
+      title: "Commands & Requests",
+      text: "When telling someone to do something (Close the door), use 'will you?' in the tag. It's like asking for cooperation."
+    },
+    {
+      title: "Used To -> Did",
+      text: "The semi-modal 'Used to' acts like the past tense. Use 'didn't' in the tag. (e.g., You used to smoke, didn't you?)"
+    },
+    {
+      title: "The Spelling Trap",
+      text: "English is weird! The negative of 'Will' is 'Won't' (not 'willn't'). The negative of 'Shall' is 'Shan't'."
     }
   ],
 
