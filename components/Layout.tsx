@@ -22,20 +22,22 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           <h1 className="text-3xl font-black tracking-tight text-white soft-neon">FlipTag</h1>
         </div>
         
-        <nav className="flex gap-5">
-          <button 
-            onClick={() => onNavigate('learn')}
-            className={`px-6 py-2.5 rounded-full text-lg font-bold transition-all ${currentView === 'learn' || currentView === 'unit-selection' ? 'bg-green-500 text-white shadow-xl' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
-          >
-            Learn
-          </button>
-          <button 
-            onClick={() => onNavigate('challenge')}
-            className={`px-6 py-2.5 rounded-full text-lg font-bold transition-all ${currentView === 'challenge' ? 'bg-orange-500 text-white shadow-xl' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
-          >
-            Challenge
-          </button>
-        </nav>
+        {currentView !== 'home' && (
+          <nav className="flex gap-5">
+            <button 
+              onClick={() => onNavigate('unit-selection')}
+              className={`px-6 py-2.5 rounded-full text-lg font-bold transition-all ${currentView === 'learn' || currentView === 'unit-selection' ? 'bg-green-500 text-white shadow-xl' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+            >
+              Learn
+            </button>
+            <button 
+              onClick={() => onNavigate('challenge')}
+              className={`px-6 py-2.5 rounded-full text-lg font-bold transition-all ${currentView === 'challenge' ? 'bg-orange-500 text-white shadow-xl' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+            >
+              Challenge
+            </button>
+          </nav>
+        )}
       </header>
 
       <main className="flex-grow pb-24">

@@ -3,10 +3,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Layout } from './components/Layout.tsx';
 import { Mascot } from './components/Mascot.tsx';
 import { Quiz } from './components/Quiz.tsx';
-import { Infographic } from './components/Infographic.tsx';
 import { View, Polarity, MascotState, LearnUnit } from './types.ts';
 import { LEARN_UNITS } from './data/content.ts';
 import { flipDialogues } from './data/dialogues.ts';
+import { Infographic } from './components/Infographic.tsx';
 
 const IDLE_COLORS = [
   { main: '#4ade80', shadow: '#22c55e', accent: '#dcfce7' },
@@ -77,11 +77,8 @@ export const App: React.FC = () => {
   const currentUnit = useMemo(() => LEARN_UNITS.find(u => u.id === selectedUnitId), [selectedUnitId]);
   
   const challengeQuestions = useMemo(() => {
-    if (view === 'challenge') {
-      return LEARN_UNITS.flatMap(u => u.practiceQuestions).sort(() => Math.random() - 0.5);
-    }
-    return [];
-  }, [view]);
+    return LEARN_UNITS.flatMap(u => u.practiceQuestions);
+  }, []);
 
   const renderHome = () => (
     <div className="flex flex-col items-center text-center space-y-8 animate-fadeIn pt-10">
@@ -105,13 +102,20 @@ export const App: React.FC = () => {
         <p className="text-2xl text-green-400 font-bold">Master Question Tags by Flipping Smartly</p>
       </div>
 
-      <button 
-        onClick={() => navigateTo('unit-selection')}
-        className="group relative px-16 py-7 bg-green-500 hover:bg-green-400 text-white text-3xl font-black rounded-full shadow-[0_15px_50px_rgba(34,197,94,0.3)] transition-all transform hover:scale-105 active:scale-95 border-b-8 border-green-700"
-      >
-        <span className="relative z-10">Start Your Journey</span>
-        <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-      </button>
+      <div className="flex flex-col gap-4">
+        <button 
+          onClick={() => navigateTo('unit-selection')}
+          className="group relative px-16 py-7 bg-green-500 hover:bg-green-400 text-white text-3xl font-black rounded-full shadow-[0_15px_50px_rgba(34,197,94,0.3)] transition-all transform hover:scale-105 active:scale-95 border-b-8 border-green-700"
+        >
+          <span className="relative z-10">Start Learning</span>
+        </button>
+        <button 
+          onClick={() => navigateTo('challenge')}
+          className="group relative px-16 py-7 bg-orange-500 hover:bg-orange-400 text-white text-3xl font-black rounded-full shadow-[0_15px_50px_rgba(249,115,22,0.3)] transition-all transform hover:scale-105 active:scale-95 border-b-8 border-orange-700"
+        >
+          Final Challenge
+        </button>
+      </div>
     </div>
   );
 
@@ -244,10 +248,11 @@ export const App: React.FC = () => {
       {view === 'home' && renderHome()}
       {view === 'unit-selection' && renderUnitSelection()}
       {view === 'learn' && currentUnit && renderLearn(currentUnit)}
-      {(view === 'practice' || view === 'challenge') && currentUnit && (
+      {view === 'practice' && currentUnit && (
         <Quiz 
-          questions={view === 'practice' ? currentUnit.practiceQuestions : challengeQuestions} 
-          isFinal={view === 'challenge'}
+          title={currentUnit.title}
+          questions={currentUnit.practiceQuestions} 
+          isFinal={false}
           triggerFlip={triggerFlip}
           mascotDialogue={mascotDialogue}
           setMascotDialogue={setMascotDialogue}
@@ -257,7 +262,24 @@ export const App: React.FC = () => {
           onNavigate={navigateTo}
           onMascotClick={handleMascotClick}
           scrollToTop={scrollToTop}
-          onBack={() => view === 'practice' ? setView('learn') : navigateTo('home')}
+          onBack={() => setView('learn')}
+        />
+      )}
+      {view === 'challenge' && (
+        <Quiz 
+          title="Final Challenge"
+          questions={challengeQuestions} 
+          isFinal={true}
+          triggerFlip={triggerFlip}
+          mascotDialogue={mascotDialogue}
+          setMascotDialogue={setMascotDialogue}
+          currentMascotPolarity={currentMascotPolarity}
+          currentMascotState={currentMascotState}
+          isJumping={isJumping}
+          onNavigate={navigateTo}
+          onMascotClick={handleMascotClick}
+          scrollToTop={scrollToTop}
+          onBack={() => navigateTo('home')}
         />
       )}
     </Layout>

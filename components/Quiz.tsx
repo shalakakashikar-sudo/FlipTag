@@ -1,10 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Mascot } from './Mascot.tsx';
 import { Question, QuestionOption, Polarity, MascotState, View } from '../types.ts';
 import { flipDialogues } from '../data/dialogues.ts';
 
+interface UserAnswer {
+  question: Question;
+  selectedText: string;
+  isCorrect: boolean;
+}
+
 interface QuizProps {
+  title: string;
   questions: Question[];
   isFinal?: boolean;
   triggerFlip: (targetPolarity: Polarity, success: boolean) => void;
@@ -19,7 +26,10 @@ interface QuizProps {
   onBack?: () => void;
 }
 
+const COUNT_OPTIONS = [5, 10, 20, 30, 40, 50];
+
 export const Quiz: React.FC<QuizProps> = ({
+  title,
   questions,
   isFinal = false,
   triggerFlip,
@@ -33,19 +43,38 @@ export const Quiz: React.FC<QuizProps> = ({
   scrollToTop,
   onBack
 }) => {
+  const [phase, setPhase] = useState<'selection' | 'active' | 'finished'>('selection');
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [score, setScore] = useState(0);
-  const [isFinished, setIsFinished] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [isCorrectCurrent, setIsCorrectCurrent] = useState<boolean | null>(null);
+  const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
+  const [activePool, setActivePool] = useState<Question[]>([]);
 
-  const q = questions[currentQuestionIdx];
+  const handleStart = (count: number) => {
+    const shuffled = [...questions].sort(() => Math.random() - 0.5);
+    setActivePool(shuffled.slice(0, Math.min(count, questions.length)));
+    setPhase('active');
+    setCurrentQuestionIdx(0);
+    setScore(0);
+    setUserAnswers([]);
+    if (scrollToTop) scrollToTop();
+  };
+
+  const q = activePool[currentQuestionIdx];
 
   const handleAnswer = (option: QuestionOption) => {
     if (feedback) return;
 
     const success = option.text === q.correctAnswer;
-    setIsCorrect(success);
+    setIsCorrectCurrent(success);
+    
+    // Store for review
+    setUserAnswers(prev => [...prev, {
+      question: q,
+      selectedText: option.text,
+      isCorrect: success
+    }]);
     
     let feedbackText = q.explanation;
     
@@ -72,55 +101,130 @@ export const Quiz: React.FC<QuizProps> = ({
 
   const nextQuestion = () => {
     setFeedback(null);
-    setIsCorrect(null);
+    setIsCorrectCurrent(null);
     triggerFlip(Polarity.POSITIVE, true);
     
     if (scrollToTop) scrollToTop();
 
-    if (currentQuestionIdx < questions.length - 1) {
+    if (currentQuestionIdx < activePool.length - 1) {
       setCurrentQuestionIdx(idx => idx + 1);
     } else {
-      setIsFinished(true);
+      setPhase('finished');
     }
   };
 
-  if (isFinished) {
+  if (phase === 'selection') {
     return (
-      <div className="flex flex-col items-center text-center space-y-10 animate-fadeIn py-12">
+      <div className="flex flex-col items-center text-center space-y-12 animate-fadeIn py-12">
+        <div className="space-y-4">
+          <h2 className="text-5xl font-black text-white tracking-tighter">{title}</h2>
+          <p className="text-2xl text-green-400 font-bold">Choose your challenge level</p>
+        </div>
+
+        <Mascot 
+          polarity={Polarity.POSITIVE} 
+          state={MascotState.HAPPY} 
+          onClick={onMascotClick}
+          size={180}
+        />
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-xl">
+          {COUNT_OPTIONS.map(count => (
+             <button
+               key={count}
+               disabled={count > questions.length && !isFinal}
+               onClick={() => handleStart(count)}
+               className={`group p-8 rounded-[2rem] bg-gray-800 border-2 border-gray-700 hover:border-green-500 hover:bg-gray-750 transition-all transform active:scale-95 shadow-xl ${count > questions.length ? 'opacity-30 cursor-not-allowed' : ''}`}
+             >
+               <span className="block text-4xl font-black text-white group-hover:text-green-400">{count}</span>
+               <span className="block text-sm font-bold text-gray-500 uppercase tracking-widest mt-2">Questions</span>
+             </button>
+          ))}
+        </div>
+
+        <button 
+          onClick={onBack}
+          className="text-gray-400 hover:text-white text-lg font-bold px-8 py-3 rounded-full hover:bg-white/5 transition-all"
+        >
+          <i className="fas fa-arrow-left mr-2"></i> Nevermind, let's go back
+        </button>
+      </div>
+    );
+  }
+
+  if (phase === 'finished') {
+    return (
+      <div className="flex flex-col items-center text-center space-y-12 animate-fadeIn py-12 max-w-3xl mx-auto">
         <div className="relative">
-          <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full" />
+          <div className="absolute inset-0 bg-green-500/10 blur-3xl rounded-full" />
           <Mascot 
-            polarity={score === questions.length ? Polarity.POSITIVE : Polarity.GREY} 
-            state={score === questions.length ? MascotState.HAPPY : MascotState.CONFUSED} 
+            polarity={score === activePool.length ? Polarity.POSITIVE : Polarity.GREY} 
+            state={score === activePool.length ? MascotState.HAPPY : MascotState.CONFUSED} 
             onClick={onMascotClick}
-            size={240}
+            size={200}
             isJumping={isJumping}
           />
         </div>
+
         <div className="space-y-4">
-          <h2 className="text-5xl font-black text-white tracking-tighter">Quiz Complete!</h2>
-          <div className="flex items-center justify-center gap-4">
-             <div className="px-8 py-3 bg-gray-800 rounded-[2rem] border-2 border-gray-700 shadow-2xl">
-                <span className="text-4xl font-black text-green-400">{score}</span>
-                <span className="text-2xl text-gray-500 font-bold"> / {questions.length}</span>
+          <h2 className="text-5xl font-black text-white tracking-tighter">Results for {title}</h2>
+          <div className="inline-flex items-center gap-6 px-10 py-5 bg-gray-800 rounded-[2.5rem] border-2 border-gray-700 shadow-2xl">
+             <div className="text-left">
+                <p className="text-xs font-black text-gray-500 uppercase tracking-widest">Final Score</p>
+                <p className="text-5xl font-black text-green-400">{score} <span className="text-2xl text-gray-600">/ {activePool.length}</span></p>
+             </div>
+             <div className="w-px h-12 bg-gray-700" />
+             <div className="text-left">
+                <p className="text-xs font-black text-gray-500 uppercase tracking-widest">Accuracy</p>
+                <p className="text-4xl font-black text-white">{Math.round((score / activePool.length) * 100)}%</p>
              </div>
           </div>
-          <p className="text-2xl text-gray-300 max-w-md mx-auto leading-relaxed font-medium">
-            {score === questions.length ? flipDialogues.final_quiz.success : flipDialogues.final_quiz.retry}
-          </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+
+        {/* Review Section */}
+        <div className="w-full space-y-8 text-left bg-gray-900/50 p-6 md:p-10 rounded-[3rem] border border-gray-800">
+           <h3 className="text-3xl font-black text-white flex items-center gap-4">
+             <i className="fas fa-list-check text-green-500"></i> Question Review
+           </h3>
+           <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+             {userAnswers.map((ans, idx) => (
+               <div key={idx} className={`p-6 rounded-[2rem] border-2 flex flex-col gap-4 ${ans.isCorrect ? 'bg-green-500/5 border-green-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
+                 <div className="flex justify-between items-start gap-4">
+                   <p className="text-xl font-black text-white">
+                     {idx + 1}. {ans.question.sentence}, <span className={ans.isCorrect ? 'text-green-400' : 'text-red-400'}>{ans.selectedText}</span>
+                   </p>
+                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${ans.isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                      <i className={`fas ${ans.isCorrect ? 'fa-check' : 'fa-xmark'}`}></i>
+                   </div>
+                 </div>
+                 
+                 {!ans.isCorrect && (
+                   <div className="bg-gray-950/50 p-4 rounded-xl space-y-1">
+                     <p className="text-sm font-bold text-gray-400 uppercase tracking-tight">Correct Answer:</p>
+                     <p className="text-xl font-black text-green-400">{ans.question.correctAnswer}</p>
+                   </div>
+                 )}
+
+                 <p className="text-base text-gray-300 italic font-medium">
+                   {ans.question.explanation}
+                 </p>
+               </div>
+             ))}
+           </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
           <button 
-            onClick={() => onNavigate('unit-selection')}
-            className="flex-grow px-8 py-5 bg-gray-800 text-white rounded-2xl text-xl font-black hover:bg-gray-700 transition-all border-b-4 border-gray-900"
+            onClick={() => setPhase('selection')}
+            className="flex-grow px-10 py-5 bg-gray-800 text-white rounded-2xl text-xl font-black hover:bg-gray-700 transition-all border-b-4 border-gray-900 shadow-xl"
           >
-            New Topic
+            Retry Quiz
           </button>
           <button 
             onClick={() => onNavigate('home')}
-            className="flex-grow px-8 py-5 bg-green-500 text-white rounded-2xl text-xl font-black hover:bg-green-400 transition-all border-b-4 border-green-700 shadow-xl"
+            className="flex-grow px-10 py-5 bg-green-500 text-white rounded-2xl text-xl font-black hover:bg-green-400 transition-all border-b-4 border-green-700 shadow-xl"
           >
-            Home
+            Back Home
           </button>
         </div>
       </div>
@@ -136,10 +240,10 @@ export const Quiz: React.FC<QuizProps> = ({
         >
           <i className="fas fa-chevron-left"></i> Stop
         </button>
-        <span className="text-sm font-black text-gray-500 uppercase tracking-widest">Question {currentQuestionIdx + 1} of {questions.length}</span>
+        <span className="text-sm font-black text-gray-500 uppercase tracking-widest">Question {currentQuestionIdx + 1} of {activePool.length}</span>
         <div className="flex items-center gap-3">
            <div className="w-24 h-2 bg-gray-800 rounded-full overflow-hidden">
-              <div className="h-full bg-green-500 transition-all duration-500" style={{width: `${((currentQuestionIdx + 1) / questions.length) * 100}%`}} />
+              <div className="h-full bg-green-500 transition-all duration-500" style={{width: `${((currentQuestionIdx + 1) / activePool.length) * 100}%`}} />
            </div>
            <span className="text-base font-black text-green-500">{score} pts</span>
         </div>
@@ -174,7 +278,7 @@ export const Quiz: React.FC<QuizProps> = ({
               onClick={() => handleAnswer(opt)}
               className={`group relative p-7 rounded-[1.75rem] text-2xl font-black transition-all transform active:scale-95 text-left border-2 ${
                 feedback 
-                  ? (opt.text === q.correctAnswer ? 'bg-green-500 border-green-400 text-white shadow-lg' : (opt.text === (isCorrect ? '' : feedback) ? 'bg-red-500 border-red-400 text-white' : 'bg-gray-800/40 border-gray-800 opacity-40')) 
+                  ? (opt.text === q.correctAnswer ? 'bg-green-500 border-green-400 text-white shadow-lg' : (opt.text === userAnswers[userAnswers.length - 1]?.selectedText ? 'bg-red-500 border-red-400 text-white' : 'bg-gray-800/40 border-gray-800 opacity-40')) 
                   : 'bg-gray-800 border-gray-700 hover:border-green-500 hover:bg-gray-750 text-white hover:shadow-xl'
               }`}
             >
@@ -188,13 +292,13 @@ export const Quiz: React.FC<QuizProps> = ({
         </div>
 
         {feedback && (
-          <div className={`p-8 rounded-[2.5rem] border-2 shadow-2xl animate-fadeIn ${isCorrect ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
+          <div className={`p-8 rounded-[2.5rem] border-2 shadow-2xl animate-fadeIn ${isCorrectCurrent ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
             <div className="flex items-start gap-6">
-              <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shrink-0 ${isCorrect ? 'bg-green-500' : 'bg-red-500 shadow-lg shadow-red-500/20'}`}>
-                {isCorrect ? '✨' : '⚠️'}
+              <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shrink-0 ${isCorrectCurrent ? 'bg-green-500' : 'bg-red-500 shadow-lg shadow-red-500/20'}`}>
+                {isCorrectCurrent ? '✨' : '⚠️'}
               </div>
               <div className="space-y-2">
-                <p className={`font-black text-3xl ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>{isCorrect ? 'Perfect logic!' : 'Logic slip!'}</p>
+                <p className={`font-black text-3xl ${isCorrectCurrent ? 'text-green-400' : 'text-red-400'}`}>{isCorrectCurrent ? 'Perfect logic!' : 'Logic slip!'}</p>
                 <p className="text-lg text-gray-100 font-bold leading-relaxed">{feedback}</p>
               </div>
             </div>
