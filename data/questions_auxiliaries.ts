@@ -1,162 +1,144 @@
-
 import { Question, Polarity } from '../types.ts';
 
-// 1. CONDENSED DATA TYPE
-// [ID, Sentence, CorrectTag, BadTag1, BadTag2, Aux, Explanation, SentencePolarity]
+// [ID, Sentence, CorrectTag, Distractor1, Distractor2, Auxiliary, Explanation, SentencePolarity]
 type RawQ = [string, string, string, string, string, string, string, Polarity];
 
-// 2. THE 150 QUESTIONS (Condensed)
 const rawData: RawQ[] = [
-  // --- TOPIC: TO BE (PRESENT) [ID: BE_PRE_xx] ---
-  ["BE_PRE_01", "She is a doctor", "isn't she?", "is she?", "doesn't she?", "be", "Positive 'is' needs negative 'isn't'.", Polarity.POSITIVE],
-  ["BE_PRE_02", "They are happy", "aren't they?", "are they?", "do they?", "be", "Positive 'are' needs negative 'aren't'.", Polarity.POSITIVE],
-  ["BE_PRE_03", "It is raining", "isn't it?", "is it?", "doesn't it?", "be", "Positive 'is' needs negative 'isn't'.", Polarity.POSITIVE],
-  ["BE_PRE_04", "You are late", "aren't you?", "are you?", "don't you?", "be", "Positive 'are' needs negative 'aren't'.", Polarity.POSITIVE],
-  ["BE_PRE_05", "He isn't home", "is he?", "isn't he?", "does he?", "be", "Negative 'isn't' needs positive 'is'.", Polarity.NEGATIVE],
-  ["BE_PRE_06", "We aren't lost", "are we?", "aren't we?", "do we?", "be", "Negative 'aren't' needs positive 'are'.", Polarity.NEGATIVE],
-  ["BE_PRE_07", "I am right", "aren't I?", "am I?", "amn't I?", "be", "Exception: 'I am' becomes 'aren't I'.", Polarity.POSITIVE],
-  ["BE_PRE_08", "The sky is blue", "isn't it?", "is it?", "wasn't it?", "be", "Subject 'The sky' becomes 'it'.", Polarity.POSITIVE],
-  ["BE_PRE_09", "Those are yours", "aren't they?", "aren't those?", "don't they?", "be", "Subject 'Those' becomes 'they'.", Polarity.POSITIVE],
-  ["BE_PRE_10", "This is fun", "isn't it?", "isn't this?", "doesn't it?", "be", "Subject 'This' becomes 'it'.", Polarity.POSITIVE],
-  ["BE_PRE_11", "I'm not late", "am I?", "aren't I?", "do I?", "be", "Negative 'I'm not' becomes 'am I'.", Polarity.NEGATIVE],
-  ["BE_PRE_12", "You aren't tired", "are you?", "aren't you?", "have you?", "be", "Negative 'aren't' becomes 'are'.", Polarity.NEGATIVE],
-  ["BE_PRE_13", "It is not fair", "is it?", "isn't it?", "does it?", "be", "Negative 'is not' becomes 'is'.", Polarity.NEGATIVE],
-  ["BE_PRE_14", "They're coming", "aren't they?", "are they?", "don't they?", "be", "Contraction 'They're' = 'They are'.", Polarity.POSITIVE],
-  ["BE_PRE_15", "She's your sister", "isn't she?", "is she?", "hasn't she?", "be", "Contraction 'She's' = 'She is'.", Polarity.POSITIVE],
+  // --- SECTION 1: SIMPLE PRESENT (DO / DOES) ---
+  ["AUX_DO_01", "You play the piano", "don't you?", "do you?", "aren't you?", "do", "Rule: Base verb 'play' ➔ Summon negative 'don't'.", Polarity.POSITIVE],
+  ["AUX_DO_02", "She likes jazz", "doesn't she?", "don't she?", "isn't she?", "do", "Rule: Verb with 's' ('likes') ➔ Summon 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_DO_03", "They live in London", "don't they?", "didn't they?", "aren't they?", "do", "Rule: Base verb 'live' ➔ Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_DO_04", "He works hard", "doesn't he?", "don't he?", "isn't he?", "do", "Rule: Verb with 's' ('works') ➔ Summon 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_DO_05", "It smells good", "doesn't it?", "don't it?", "isn't it?", "do", "Rule: Verb with 's' ('smells') ➔ Summon 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_DO_06", "We need water", "don't we?", "aren't we?", "haven't we?", "do", "Rule: Main verb 'need' ➔ Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_DO_07", "You don't smoke", "do you?", "don't you?", "are you?", "do", "Rule: Negative 'don't' visible ➔ Remove 'n't' to get 'do you?'.", Polarity.NEGATIVE],
+  ["AUX_DO_08", "She doesn't know", "does she?", "doesn't she?", "is she?", "do", "Rule: Negative 'doesn't' visible ➔ Remove 'n't' to get 'does she?'.", Polarity.NEGATIVE],
+  ["AUX_DO_09", "They don't care", "do they?", "don't they?", "are they?", "do", "Rule: Negative 'don't' visible ➔ Remove 'n't' to get 'do they?'.", Polarity.NEGATIVE],
+  ["AUX_DO_10", "John drives fast", "doesn't he?", "don't he?", "isn't he?", "do", "Rule: 'John' (He) + 'drives' (s) ➔ Summon 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_DO_11", "Birds fly south", "don't they?", "doesn't they?", "aren't they?", "do", "Rule: 'Birds' (They) + 'fly' (base) ➔ Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_DO_12", "It doesn't work", "does it?", "doesn't it?", "is it?", "do", "Rule: Negative 'doesn't' visible ➔ Tag is positive 'does'.", Polarity.NEGATIVE],
+  ["AUX_DO_13", "I look tired", "don't I?", "do I?", "am I?", "do", "Rule: Base verb 'look' ➔ Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_DO_14", "The bus stops here", "doesn't it?", "don't it?", "isn't it?", "do", "Rule: 'The bus' (It) + 'stops' (s) ➔ Summon 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_DO_15", "You want to go", "don't you?", "do you?", "wantn't you?", "do", "Rule: Base verb 'want' ➔ Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_DO_16", "Mary sings well", "doesn't she?", "don't she?", "is she?", "do", "Rule: 'Mary' (She) + 'sings' (s) ➔ Summon 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_DO_17", "Teachers work late", "don't they?", "doesn't they?", "aren't they?", "do", "Rule: 'Teachers' (They) + 'work' (base) ➔ Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_DO_18", "He watches TV", "doesn't he?", "don't he?", "watchn't he?", "do", "Rule: 'Watches' has 'es' (s-form) ➔ Summon 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_DO_19", "You don't like it", "do you?", "don't you?", "are you?", "do", "Rule: Negative 'don't' ➔ Tag is positive 'do'.", Polarity.NEGATIVE],
+  ["AUX_DO_20", "It doesn't matter", "does it?", "doesn't it?", "is it?", "do", "Rule: Negative 'doesn't' ➔ Tag is positive 'does'.", Polarity.NEGATIVE],
 
-  // --- TOPIC: TO BE (PAST) [ID: BE_PST_xx] ---
-  ["BE_PST_01", "He was there", "wasn't he?", "was he?", "didn't he?", "be", "Past 'was' becomes 'wasn't'.", Polarity.POSITIVE],
-  ["BE_PST_02", "They were friends", "weren't they?", "wasn't they?", "didn't they?", "be", "Past 'were' becomes 'weren't'.", Polarity.POSITIVE],
-  ["BE_PST_03", "It wasn't cold", "was it?", "wasn't it?", "did it?", "be", "Negative 'wasn't' becomes 'was'.", Polarity.NEGATIVE],
-  ["BE_PST_04", "We were winning", "weren't we?", "were we?", "hadn't we?", "be", "Past 'were' becomes 'weren't'.", Polarity.POSITIVE],
-  ["BE_PST_05", "She wasn't ready", "was she?", "wasn't she?", "did she?", "be", "Negative 'wasn't' becomes 'was'.", Polarity.NEGATIVE],
-  ["BE_PST_06", "You were sleeping", "weren't you?", "were you?", "didn't you?", "be", "Past 'were' becomes 'weren't'.", Polarity.POSITIVE],
-  ["BE_PST_07", "The movie was long", "wasn't it?", "was it?", "didn't it?", "be", "'The movie' becomes 'it'.", Polarity.POSITIVE],
-  ["BE_PST_08", "My keys were here", "weren't they?", "wasn't they?", "are they?", "be", "'My keys' (plural) becomes 'they'.", Polarity.POSITIVE],
-  ["BE_PST_09", "There was a noise", "wasn't there?", "wasn't it?", "didn't there?", "be", "Subject 'There' remains 'there'.", Polarity.POSITIVE],
-  ["BE_PST_10", "There were plenty", "weren't there?", "weren't they?", "didn't there?", "be", "Subject 'There' remains 'there'.", Polarity.POSITIVE],
+  // --- SECTION 2: SIMPLE PAST (DID) ---
+  ["AUX_DID_01", "It rained yesterday", "didn't it?", "doesn't it?", "wasn't it?", "did", "Rule: Past tense verb 'rained' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_02", "You saw him", "didn't you?", "don't you?", "sawn't you?", "did", "Rule: Irregular past 'saw' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_03", "They went home", "didn't they?", "weren't they?", "don't they?", "did", "Rule: Irregular past 'went' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_04", "She called you", "didn't she?", "doesn't she?", "wasn't she?", "did", "Rule: Past tense 'called' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_05", "We finished it", "didn't we?", "don't we?", "haven't we?", "did", "Rule: Past tense 'finished' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_06", "You didn't go", "did you?", "didn't you?", "were you?", "did", "Rule: Negative 'didn't' visible ➔ Remove 'n't' to get 'did you?'.", Polarity.NEGATIVE],
+  ["AUX_DID_07", "He didn't eat", "did he?", "didn't he?", "was he?", "did", "Rule: Negative 'didn't' visible ➔ Remove 'n't' to get 'did he?'.", Polarity.NEGATIVE],
+  ["AUX_DID_08", "She arrived late", "didn't she?", "doesn't she?", "hadn't she?", "did", "Rule: Past tense 'arrived' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_09", "The car crashed", "didn't it?", "wasn't it?", "hadn't it?", "did", "Rule: Past tense 'crashed' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_10", "You used to swim", "didn't you?", "usedn't you?", "don't you?", "did", "Rule: 'Used to' acts as a past tense verb. Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_11", "He taught English", "didn't he?", "wasn't he?", "doesn't he?", "did", "Rule: Irregular past 'taught' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_12", "I made a mistake", "didn't I?", "don't I?", "wasn't I?", "did", "Rule: Irregular past 'made' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_13", "They had a party", "didn't they?", "hadn't they?", "weren't they?", "did", "Rule: 'Had' is the main verb (meaning 'hosted'). Use 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_14", "She read the book", "didn't she?", "doesn't she?", "isn't she?", "did", "Rule: 'Read' (pronounced 'red') is past tense here. Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_15", "He cut his finger", "didn't he?", "doesn't he?", "wasn't he?", "did", "Rule: 'Cut' (past) is the same as 'Cut' (present), but 'He' would take 'Cuts' in present. So it must be past.", Polarity.POSITIVE],
+  ["AUX_DID_16", "We bought a house", "didn't we?", "don't we?", "haven't we?", "did", "Rule: Irregular past 'bought' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_17", "You didn't sleep", "did you?", "didn't you?", "do you?", "did", "Rule: Negative 'didn't' ➔ Tag is positive 'did'.", Polarity.NEGATIVE],
+  ["AUX_DID_18", "It cost a lot", "didn't it?", "doesn't it?", "isn't it?", "did", "Rule: 'Cost' (past). If present, it would be 'Costs'. ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_19", "They spoke loudly", "didn't they?", "don't they?", "weren't they?", "did", "Rule: Irregular past 'spoke' ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_DID_20", "She wrote a letter", "didn't she?", "doesn't she?", "wasn't she?", "did", "Rule: Irregular past 'wrote' ➔ Summon 'didn't'.", Polarity.POSITIVE],
 
-  // --- TOPIC: DO/DOES (SIMPLE PRESENT) [ID: AUX_DO_xx] ---
-  ["AUX_DO_01", "You play piano", "don't you?", "do you?", "aren't you?", "do", "V1 'play' summons 'don't'.", Polarity.POSITIVE],
-  ["AUX_DO_02", "She likes jazz", "doesn't she?", "don't she?", "isn't she?", "do", "V1+s 'likes' summons 'doesn't'.", Polarity.POSITIVE],
-  ["AUX_DO_03", "They live here", "don't they?", "didn't they?", "aren't they?", "do", "V1 'live' summons 'don't'.", Polarity.POSITIVE],
-  ["AUX_DO_04", "He works hard", "doesn't he?", "don't he?", "isn't he?", "do", "V1+s 'works' summons 'doesn't'.", Polarity.POSITIVE],
-  ["AUX_DO_05", "It smells good", "doesn't it?", "don't it?", "isn't it?", "do", "V1+s 'smells' summons 'doesn't'.", Polarity.POSITIVE],
-  ["AUX_DO_06", "We need water", "don't we?", "aren't we?", "haven't we?", "do", "V1 'need' summons 'don't'.", Polarity.POSITIVE],
-  ["AUX_DO_07", "You don't smoke", "do you?", "don't you?", "are you?", "do", "Negative 'don't' becomes 'do'.", Polarity.NEGATIVE],
-  ["AUX_DO_08", "She doesn't know", "does she?", "doesn't she?", "is she?", "do", "Negative 'doesn't' becomes 'does'.", Polarity.NEGATIVE],
-  ["AUX_DO_09", "They don't care", "do they?", "don't they?", "are they?", "do", "Negative 'don't' becomes 'do'.", Polarity.NEGATIVE],
-  ["AUX_DO_10", "He rarely smiles", "does he?", "doesn't he?", "is he?", "do", "Tricky: 'Rarely' is negative! Tag is positive.", Polarity.NEGATIVE],
-  ["AUX_DO_11", "I hardly speak", "do I?", "don't I?", "am I?", "do", "Tricky: 'Hardly' is negative! Tag is positive.", Polarity.NEGATIVE],
-  ["AUX_DO_12", "You have a car", "don't you?", "aren't you?", "will you?", "do", "Possession 'have' needs helper 'do'.", Polarity.POSITIVE],
-  ["AUX_DO_13", "She has a bike", "doesn't she?", "is she?", "can she?", "do", "Possession 'has' needs helper 'does'.", Polarity.POSITIVE],
-  ["AUX_DO_14", "Everyone knows", "don't they?", "doesn't he?", "do they?", "do", "Subject 'Everyone' takes 'they'. 'They' needs 'don't'.", Polarity.POSITIVE],
-  ["AUX_DO_15", "Nobody listens", "do they?", "don't they?", "does he?", "do", "'Nobody' is negative & becomes 'they'. Tag is positive.", Polarity.NEGATIVE],
-  
-  // --- TOPIC: DID (SIMPLE PAST) [ID: AUX_DID_xx] ---
-  ["AUX_DID_01", "It rained yesterday", "didn't it?", "doesn't it?", "wasn't it?", "did", "Past V2 'rained' summons 'didn't'.", Polarity.POSITIVE],
-  ["AUX_DID_02", "You saw him", "didn't you?", "don't you?", "sawn't you?", "did", "Past V2 'saw' summons 'didn't'.", Polarity.POSITIVE],
-  ["AUX_DID_03", "They went home", "didn't they?", "weren't they?", "don't they?", "did", "Past V2 'went' summons 'didn't'.", Polarity.POSITIVE],
-  ["AUX_DID_04", "She called you", "didn't she?", "doesn't she?", "wasn't she?", "did", "Past V2 'called' summons 'didn't'.", Polarity.POSITIVE],
-  ["AUX_DID_05", "We finished it", "didn't we?", "don't we?", "haven't we?", "did", "Past V2 'finished' summons 'didn't'.", Polarity.POSITIVE],
-  ["AUX_DID_06", "You didn't go", "did you?", "didn't you?", "were you?", "did", "Negative 'didn't' becomes 'did'.", Polarity.NEGATIVE],
-  ["AUX_DID_07", "He didn't eat", "did he?", "didn't he?", "was he?", "did", "Negative 'didn't' becomes 'did'.", Polarity.NEGATIVE],
-  ["AUX_DID_08", "She never came", "did she?", "didn't she?", "was she?", "did", "'Never' + Past = Negative. Tag is positive 'did'.", Polarity.NEGATIVE],
-  ["AUX_DID_09", "Nothing happened", "did it?", "didn't it?", "was it?", "did", "'Nothing' is negative. 'Happened' is past.", Polarity.NEGATIVE],
-  ["AUX_DID_10", "You used to swim", "didn't you?", "usedn't you?", "don't you?", "did", "'Used to' is past tense. Summon 'didn't'.", Polarity.POSITIVE],
+  // --- SECTION 3: PERFECT TENSES (HAVE / HAS / HAD) ---
+  ["AUX_PRF_01", "You have eaten", "haven't you?", "don't you?", "didn't you?", "have", "Rule: 'Have' is the helper verb here. Repeat it.", Polarity.POSITIVE],
+  ["AUX_PRF_02", "She has gone", "hasn't she?", "doesn't she?", "isn't she?", "have", "Rule: 'Has' is the helper verb here. Repeat it.", Polarity.POSITIVE],
+  ["AUX_PRF_03", "They haven't seen it", "have they?", "haven't they?", "do they?", "have", "Rule: Negative 'haven't' visible ➔ Tag is positive 'have they?'.", Polarity.NEGATIVE],
+  ["AUX_PRF_04", "He hasn't arrived", "has he?", "hasn't he?", "does he?", "have", "Rule: Negative 'hasn't' visible ➔ Tag is positive 'has he?'.", Polarity.NEGATIVE],
+  ["AUX_PRF_05", "It has stopped", "hasn't it?", "doesn't it?", "isn't it?", "have", "Rule: 'Has' is the helper verb. Repeat it.", Polarity.POSITIVE],
+  ["AUX_PRF_06", "We had met before", "hadn't we?", "didn't we?", "haven't we?", "have", "Rule: Past Perfect 'had'. Repeat it.", Polarity.POSITIVE],
+  ["AUX_PRF_07", "You hadn't left", "had you?", "hadn't you?", "did you?", "have", "Rule: Negative 'hadn't' ➔ Tag is positive 'had you?'.", Polarity.NEGATIVE],
+  ["AUX_PRF_08", "She'd done it", "hadn't she?", "wouldn't she?", "didn't she?", "have", "Rule: 'She'd' + V3 (done) = 'She had'. Tag is 'hadn't she?'.", Polarity.POSITIVE],
+  ["AUX_PRF_09", "He's visited Paris", "hasn't he?", "isn't he?", "doesn't he?", "have", "Rule: 'He's' + V3 (visited) = 'He has'. Tag is 'hasn't he?'.", Polarity.POSITIVE],
+  ["AUX_PRF_10", "They'd gone out", "hadn't they?", "wouldn't they?", "didn't they?", "have", "Rule: 'They'd' + V3 (gone) = 'They had'. Tag is 'hadn't they?'.", Polarity.POSITIVE],
+  ["AUX_PRF_11", "I have finished", "haven't I?", "don't I?", "didn't I?", "have", "Rule: Present Perfect 'Have'. Repeat it.", Polarity.POSITIVE],
+  ["AUX_PRF_12", "You haven't tried", "have you?", "do you?", "did you?", "have", "Rule: Negative 'haven't' ➔ Tag is positive 'have'.", Polarity.NEGATIVE],
+  ["AUX_PRF_13", "It hasn't rained", "has it?", "does it?", "is it?", "have", "Rule: Negative 'hasn't' ➔ Tag is positive 'has'.", Polarity.NEGATIVE],
+  ["AUX_PRF_14", "We've seen this", "haven't we?", "don't we?", "didn't we?", "have", "Rule: 'We've' = 'We have'. Tag is 'haven't we?'.", Polarity.POSITIVE],
+  ["AUX_PRF_15", "She's broken it", "hasn't she?", "isn't she?", "doesn't she?", "have", "Rule: 'She's' + V3 (broken) = 'She has'. Tag is 'hasn't she?'.", Polarity.POSITIVE],
+  ["AUX_PRF_16", "The train has left", "hasn't it?", "doesn't it?", "isn't it?", "have", "Rule: 'Has' + V3 (left). Repeat 'has'.", Polarity.POSITIVE],
+  ["AUX_PRF_17", "They had forgotten", "hadn't they?", "didn't they?", "haven't they?", "have", "Rule: Past Perfect 'Had'. Repeat 'had'.", Polarity.POSITIVE],
+  ["AUX_PRF_18", "You hadn't eaten", "had you?", "did you?", "have you?", "have", "Rule: Negative 'hadn't'. Tag is positive 'had'.", Polarity.NEGATIVE],
+  ["AUX_PRF_19", "Who has done this", "hasn't he?", "haven't they?", "didn't he?", "have", "Rule: Subject 'Who' usually takes a singular tag 'he' in grammar exercises (or 'they' in modern speech).", Polarity.POSITIVE],
+  ["AUX_PRF_20", "Everyone has arrived", "haven't they?", "hasn't he?", "hasn't they?", "have", "Rule: 'Everyone' takes 'has' (singular verb), but 'they' (plural tag). 'They' needs 'have'.", Polarity.POSITIVE],
 
-  // --- TOPIC: HAVE/HAS/HAD (PERFECT) [ID: AUX_PRF_xx] ---
-  ["AUX_PRF_01", "You have eaten", "haven't you?", "don't you?", "didn't you?", "have", "Auxiliary 'have' repeats.", Polarity.POSITIVE],
-  ["AUX_PRF_02", "She has gone", "hasn't she?", "doesn't she?", "isn't she?", "have", "Auxiliary 'has' repeats.", Polarity.POSITIVE],
-  ["AUX_PRF_03", "They haven't seen", "have they?", "haven't they?", "do they?", "have", "Negative 'haven't' becomes 'have'.", Polarity.NEGATIVE],
-  ["AUX_PRF_04", "He hasn't arrived", "has he?", "hasn't he?", "does he?", "have", "Negative 'hasn't' becomes 'has'.", Polarity.NEGATIVE],
-  ["AUX_PRF_05", "It has stopped", "hasn't it?", "doesn't it?", "isn't it?", "have", "Auxiliary 'has' repeats.", Polarity.POSITIVE],
-  ["AUX_PRF_06", "We had met before", "hadn't we?", "didn't we?", "haven't we?", "have", "Past Perfect 'had' repeats.", Polarity.POSITIVE],
-  ["AUX_PRF_07", "You hadn't left", "had you?", "hadn't you?", "did you?", "have", "Negative 'hadn't' becomes 'had'.", Polarity.NEGATIVE],
-  ["AUX_PRF_08", "She'd done it", "hadn't she?", "wouldn't she?", "didn't she?", "have", "Contraction 'She'd' + V3 (done) = 'She had'.", Polarity.POSITIVE],
-  ["AUX_PRF_09", "He's visited Paris", "hasn't he?", "isn't he?", "doesn't he?", "have", "Contraction 'He's' + V3 (visited) = 'He has'.", Polarity.POSITIVE],
-  ["AUX_PRF_10", "They'd gone out", "hadn't they?", "wouldn't they?", "didn't they?", "have", "Contraction 'They'd' + V3 (gone) = 'They had'.", Polarity.POSITIVE],
+  // --- SECTION 4: THE "HAVE" TRAP (POSSESSION / OBLIGATION / ACTION) ---
+  ["AUX_TRP_01", "You have a car", "don't you?", "haven't you?", "are you?", "do", "Rule: 'Have' (Possession) is a main verb. Summon 'Do'.", Polarity.POSITIVE],
+  ["AUX_TRP_02", "She has a bike", "doesn't she?", "hasn't she?", "is she?", "do", "Rule: 'Has' (Possession) is a main verb. Summon 'Doesn't'.", Polarity.POSITIVE],
+  ["AUX_TRP_03", "You have got a car", "haven't you?", "don't you?", "didn't you?", "have", "Rule: 'Have GOT' uses 'Have' as the helper. Repeat 'Have'.", Polarity.POSITIVE],
+  ["AUX_TRP_04", "She has got a bike", "hasn't she?", "doesn't she?", "isn't she?", "have", "Rule: 'Has GOT' uses 'Has' as the helper. Repeat 'Has'.", Polarity.POSITIVE],
+  ["AUX_TRP_05", "We have to go", "don't we?", "haven't we?", "mustn't we?", "do", "Rule: 'Have to' is a semi-modal for obligation. It uses 'Do/Don't'.", Polarity.POSITIVE],
+  ["AUX_TRP_06", "He has to work", "doesn't he?", "hasn't he?", "mustn't he?", "do", "Rule: 'Has to' uses 'Does/Doesn't'.", Polarity.POSITIVE],
+  ["AUX_TRP_07", "You had to wait", "didn't you?", "hadn't you?", "shouldn't you?", "did", "Rule: 'Had to' is the past of 'have to'. Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_TRP_08", "You don't have to go", "do you?", "have you?", "must you?", "do", "Rule: Negative 'don't have to'. Remove 'not' ➔ 'do you?'.", Polarity.NEGATIVE],
+  ["AUX_TRP_09", "They have lunch at 1", "don't they?", "haven't they?", "aren't they?", "do", "Rule: 'Have' implies an action (eating). Always use 'don't'.", Polarity.POSITIVE],
+  ["AUX_TRP_10", "She usually has a bath", "doesn't she?", "hasn't she?", "isn't she?", "do", "Rule: 'Has' implies an action (bathing). Always use 'doesn't'.", Polarity.POSITIVE],
+  ["AUX_TRP_11", "He had a good time", "didn't he?", "hadn't he?", "wasn't he?", "did", "Rule: 'Had' (Experience/Action) ➔ Summon 'didn't'.", Polarity.POSITIVE],
+  ["AUX_TRP_12", "We have a problem", "don't we?", "haven't we?", "aren't we?", "do", "Rule: Possession/State. Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_TRP_13", "He doesn't have time", "does he?", "has he?", "is he?", "do", "Rule: Negative 'doesn't have'. Tag is 'does he?'.", Polarity.NEGATIVE],
+  ["AUX_TRP_14", "They didn't have to pay", "did they?", "had they?", "do they?", "did", "Rule: Negative 'didn't have to'. Tag is 'did they?'.", Polarity.NEGATIVE],
+  ["AUX_TRP_15", "I have a headache", "don't I?", "haven't I?", "am I?", "do", "Rule: State/Possession. Summon 'don't'.", Polarity.POSITIVE],
+  ["AUX_TRP_16", "He has got to leave", "hasn't he?", "doesn't he?", "mustn't he?", "have", "Rule: 'Has GOT to' ➔ Helper is 'Has'. Tag 'hasn't he?'.", Polarity.POSITIVE],
+  ["AUX_TRP_17", "You'd better go", "hadn't you?", "wouldn't you?", "didn't you?", "have", "Rule: 'd better' = 'had better'. Tag is 'hadn't you?'.", Polarity.POSITIVE],
+  ["AUX_TRP_18", "He'd better stop", "hadn't he?", "wouldn't he?", "didn't he?", "have", "Rule: 'd better' = 'had better'. Tag is 'hadn't he?'.", Polarity.POSITIVE],
+  ["AUX_TRP_19", "We've got enough", "haven't we?", "don't we?", "didn't we?", "have", "Rule: 'We've got' = 'We have got'. Helper is 'have'.", Polarity.POSITIVE],
+  ["AUX_TRP_20", "She has no idea", "does she?", "has she?", "doesn't she?", "do", "Rule: 'Has' main verb. 'No idea' makes it negative. Tag is positive 'does she?'.", Polarity.NEGATIVE],
 
-  // --- TOPIC: MODALS (CAN/COULD) [ID: MOD_CAN_xx] ---
-  ["MOD_CAN_01", "You can swim", "can't you?", "don't you?", "can you?", "can", "Modal 'can' becomes 'can't'.", Polarity.POSITIVE],
-  ["MOD_CAN_02", "She can't hear", "can she?", "can't she?", "does she?", "can", "Negative 'can't' becomes 'can'.", Polarity.NEGATIVE],
-  ["MOD_CAN_03", "They could help", "couldn't they?", "can't they?", "didn't they?", "could", "Modal 'could' becomes 'couldn't'.", Polarity.POSITIVE],
-  ["MOD_CAN_04", "He couldn't see", "could he?", "couldn't he?", "did he?", "could", "Negative 'couldn't' becomes 'could'.", Polarity.NEGATIVE],
-  ["MOD_CAN_05", "It can wait", "can't it?", "doesn't it?", "won't it?", "can", "Modal 'can' becomes 'can't'.", Polarity.POSITIVE],
-
-  // --- TOPIC: MODALS (WILL/WOULD) [ID: MOD_WIL_xx] ---
-  ["MOD_WIL_01", "You will go", "won't you?", "willn't you?", "don't you?", "will", "Positive 'will' becomes 'won't'.", Polarity.POSITIVE],
-  ["MOD_WIL_02", "She won't cry", "will she?", "won't she?", "does she?", "will", "Negative 'won't' becomes 'will'.", Polarity.NEGATIVE],
-  ["MOD_WIL_03", "They'd like it", "wouldn't they?", "hadn't they?", "didn't they?", "would", "Contraction 'They'd' + like = 'They would'.", Polarity.POSITIVE],
-  ["MOD_WIL_04", "He would know", "wouldn't he?", "willn't he?", "didn't he?", "would", "Modal 'would' repeats.", Polarity.POSITIVE],
-  ["MOD_WIL_05", "I'll be there", "won't I?", "will I?", "am I?", "will", "Contraction 'I'll' = 'I will'.", Polarity.POSITIVE],
-  
-  // --- TOPIC: MODALS (SHOULD/MUST) [ID: MOD_MSC_xx] ---
-  ["MOD_MSC_01", "You should study", "shouldn't you?", "don't you?", "wouldn't you?", "should", "Modal 'should' repeats.", Polarity.POSITIVE],
-  ["MOD_MSC_02", "We shouldn't lie", "should we?", "shouldn't we?", "do we?", "should", "Negative 'shouldn't' becomes 'should'.", Polarity.NEGATIVE],
-  ["MOD_MSC_03", "He must go", "mustn't he?", "doesn't he?", "can't he?", "must", "Modal 'must' repeats.", Polarity.POSITIVE],
-  ["MOD_MSC_04", "They mustn't talk", "must they?", "mustn't they?", "do they?", "must", "Negative 'mustn't' becomes 'must'.", Polarity.NEGATIVE],
-  ["MOD_MSC_05", "It ought to work", "oughtn't it?", "shouldn't it?", "didn't it?", "ought", "'Ought' repeats (or use shouldn't).", Polarity.POSITIVE],
-
-  // --- TOPIC: IMPERATIVES/SUGGESTIONS [ID: IMP_SUG_xx] ---
-  ["IMP_SUG_01", "Close the door", "will you?", "don't you?", "do you?", "will", "Command uses 'will you'.", Polarity.POSITIVE],
-  ["IMP_SUG_02", "Don't stop", "will you?", "do you?", "are you?", "will", "Negative command always uses 'will you'.", Polarity.NEGATIVE],
-  ["IMP_SUG_03", "Let's dance", "shall we?", "will we?", "can we?", "shall", "Suggestion 'Let's' uses 'shall we'.", Polarity.POSITIVE],
-  ["IMP_SUG_04", "Let me help", "will you?", "shall I?", "can I?", "will", "Asking permission 'Let me' uses 'will you'.", Polarity.POSITIVE],
-  ["IMP_SUG_05", "Pass the salt", "will you?", "do you?", "aren't you?", "will", "Polite request uses 'will you'.", Polarity.POSITIVE],
-  ["IMP_SUG_06", "Be quiet", "can't you?", "will you?", "are you?", "can", "Impolite command can use 'can't you'.", Polarity.POSITIVE],
-  ["IMP_SUG_07", "Have a seat", "won't you?", "will you?", "do you?", "will", "Inviting request uses 'won't you'.", Polarity.POSITIVE],
-  ["IMP_SUG_08", "Don't be late", "will you?", "won't you?", "do you?", "will", "Negative command = 'will you'.", Polarity.NEGATIVE],
-  ["IMP_SUG_09", "Let's not fight", "shall we?", "will we?", "do we?", "shall", "Negative suggestion still uses 'shall we'.", Polarity.POSITIVE],
-  ["IMP_SUG_10", "Wait for me", "will you?", "do you?", "aren't you?", "will", "Command = 'will you'.", Polarity.POSITIVE],
-
-  // --- TOPIC: COMPLEX/ADVANCED [ID: ADV_CPL_xx] ---
-  ["ADV_CPL_01", "Nothing matters", "does it?", "doesn't it?", "is it?", "do", "'Nothing' is negative + V1+s.", Polarity.NEGATIVE],
-  ["ADV_CPL_02", "Nobody called", "did they?", "didn't they?", "did he?", "did", "'Nobody' is negative + V2. Becomes 'they'.", Polarity.NEGATIVE],
-  ["ADV_CPL_03", "Everything is ok", "isn't it?", "aren't they?", "is it?", "be", "'Everything' is positive. Becomes 'it'.", Polarity.POSITIVE],
-  ["ADV_CPL_04", "Everyone is here", "aren't they?", "isn't it?", "isn't he?", "be", "'Everyone' takes plural 'they' tag.", Polarity.POSITIVE],
-  ["ADV_CPL_05", "Neither came", "did they?", "didn't they?", "did he?", "did", "'Neither' is negative. Becomes 'they'.", Polarity.NEGATIVE],
-  ["ADV_CPL_06", "Little is known", "is it?", "isn't it?", "does it?", "be", "'Little' (scarce) is negative. Tag is positive.", Polarity.NEGATIVE],
-  ["ADV_CPL_07", "A little is left", "isn't it?", "is it?", "doesn't it?", "be", "'A little' (some) is positive. Tag is negative.", Polarity.POSITIVE],
-  ["ADV_CPL_08", "Few people go", "do they?", "don't they?", "are they?", "do", "'Few' is negative. Tag is positive.", Polarity.NEGATIVE],
-  ["ADV_CPL_09", "A few people go", "don't they?", "do they?", "aren't they?", "do", "'A few' is positive. Tag is negative.", Polarity.POSITIVE],
-  ["ADV_CPL_10", "You'd better go", "hadn't you?", "wouldn't you?", "didn't you?", "have", "'You'd better' = 'You had better'.", Polarity.POSITIVE],
-  ["ADV_CPL_11", "You'd rather stay", "wouldn't you?", "hadn't you?", "didn't you?", "would", "'You'd rather' = 'You would rather'.", Polarity.POSITIVE],
-  ["ADV_CPL_12", "One must try", "mustn't one?", "mustn't he?", "doesn't one?", "must", "Subject 'One' repeats in formal English.", Polarity.POSITIVE],
-  ["ADV_CPL_13", "This is the one", "isn't it?", "isn't this?", "aren't they?", "be", "'This' becomes 'it'.", Polarity.POSITIVE],
-  ["ADV_CPL_14", "There's no point", "is there?", "isn't there?", "is it?", "be", "Negative 'no point'. Subject 'there'.", Polarity.NEGATIVE],
-  ["ADV_CPL_15", "Neither of us went", "did we?", "didn't we?", "did they?", "did", "'Neither of us' = 'We'. Negative.", Polarity.NEGATIVE]
+  // --- SECTION 5: ADVANCED AUXILIARIES (NEGATIVES / QUANTIFIERS / SUBJECTS) ---
+  ["AUX_ADV_01", "Everyone knows him", "don't they?", "doesn't he?", "doesn't they?", "do", "Rule: 'Everyone' (singular verb) ➔ Tag 'they' (plural helper 'don't').", Polarity.POSITIVE],
+  ["AUX_ADV_02", "Nobody listens", "do they?", "don't they?", "does he?", "do", "Rule: 'Nobody' is negative. 'Nobody' uses 'they'. Tag is Positive + They ➔ 'do they?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_03", "He never smiles", "does he?", "doesn't he?", "is he?", "do", "Rule: 'Never' makes the sentence negative. Positive tag ➔ 'does he?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_04", "She hardly speaks", "does she?", "doesn't she?", "is she?", "do", "Rule: 'Hardly' is a negative adverb. Positive tag ➔ 'does she?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_05", "You rarely visit", "do you?", "don't you?", "are you?", "do", "Rule: 'Rarely' is negative. Positive tag ➔ 'do you?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_06", "Few people understand", "do they?", "don't they?", "are they?", "do", "Rule: 'Few' means 'almost no one' (Negative). Positive tag ➔ 'do they?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_07", "A few people know", "don't they?", "do they?", "aren't they?", "do", "Rule: 'A few' means 'some' (Positive). Negative tag ➔ 'don't they?'.", Polarity.POSITIVE],
+  ["AUX_ADV_08", "Little is known", "is it?", "isn't it?", "does it?", "be", "Rule: 'Little' (scarce) is negative. Positive tag ➔ 'is it?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_09", "A little is left", "isn't it?", "is it?", "doesn't it?", "be", "Rule: 'A little' (some) is positive. Negative tag ➔ 'isn't it?'.", Polarity.POSITIVE],
+  ["AUX_ADV_10", "Nothing matters", "does it?", "doesn't it?", "is it?", "do", "Rule: 'Nothing' is negative. Verb 'matters' (s). Tag 'does it?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_11", "Neither of them came", "did they?", "didn't they?", "did neither?", "did", "Rule: 'Neither' is negative. 'Came' is past. Tag 'did they?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_12", "None of us went", "did we?", "didn't we?", "did they?", "did", "Rule: 'None' is negative. 'Of us' = 'We'. Tag 'did we?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_13", "Scarcely had he gone", "had he?", "hadn't he?", "did he?", "have", "Rule: 'Scarcely' is negative. 'Had' is the auxiliary. Tag 'had he?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_14", "No sooner did we arrive", "did we?", "didn't we?", "had we?", "do", "Rule: 'No sooner' is negative. 'Did' is the auxiliary. Tag 'did we?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_15", "Seldom do they eat out", "do they?", "don't they?", "are they?", "do", "Rule: 'Seldom' is negative. 'Do' is visible. Tag 'do they?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_16", "You seldom drink tea", "do you?", "don't you?", "are you?", "do", "Rule: 'Seldom' makes it negative. Positive tag ➔ 'do you?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_17", "He barely escaped", "did he?", "didn't he?", "had he?", "did", "Rule: 'Barely' is negative. 'Escaped' is past. Tag 'did he?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_18", "Someone called", "didn't they?", "didn't he?", "did they?", "did", "Rule: 'Someone' takes 'they' in tags. Past tense. Tag 'didn't they?'.", Polarity.POSITIVE],
+  ["AUX_ADV_19", "Nobody has seen it", "have they?", "has they?", "hasn't they?", "have", "Rule: 'Nobody' (Negative) + 'Has' (Singular) ➔ Tag 'They' (Positive Plural) ➔ 'Have they?'.", Polarity.NEGATIVE],
+  ["AUX_ADV_20", "Everyone does their best", "don't they?", "doesn't he?", "doesn't they?", "do", "Rule: 'Everyone' + 'Does'. Tag 'They' + 'Do'. Negative flip ➔ 'Don't they?'.", Polarity.POSITIVE]
 ];
 
-// 3. HYDRATION FUNCTION
-const generateQuestionBank = (): Question[] => {
-  return rawData.map(data => {
-    const [id, sentence, correct, dist1, dist2, aux, exp, polarity] = data;
+const generateQuestionBank = (data: RawQ[]): Question[] => {
+  return data.map(item => {
+    const [id, sentence, correct, dist1, dist2, aux, exp, sentencePol] = item;
     
-    const correctTagPolarity = polarity === Polarity.POSITIVE 
-      ? Polarity.NEGATIVE 
-      : Polarity.POSITIVE;
-
-    const dist1Polarity = correctTagPolarity === Polarity.POSITIVE 
-      ? Polarity.NEGATIVE 
-      : Polarity.POSITIVE;
+    // Dynamic Polarity Detection
+    // If the correct answer contains "n't" or "not", the tag is Negative.
+    const isTagNegative = correct.includes("n't") || correct.includes(" not");
+    const tagPol = isTagNegative ? Polarity.NEGATIVE : Polarity.POSITIVE;
 
     return {
       id,
       sentence,
       options: [
-        { text: correct, polarity: correctTagPolarity },
-        { text: dist1, polarity: dist1Polarity },
-        { text: dist2, polarity: dist1Polarity }
+        { text: correct, polarity: tagPol },
+        { text: dist1, polarity: tagPol === Polarity.POSITIVE ? Polarity.NEGATIVE : Polarity.POSITIVE },
+        { text: dist2, polarity: Polarity.NEUTRAL }
       ].sort(() => Math.random() - 0.5),
       correctAnswer: correct,
-      sentencePolarity: polarity,
-      tagPolarity: correctTagPolarity,
+      sentencePolarity: sentencePol,
+      tagPolarity: tagPol,
       explanation: exp,
       auxiliary: aux
     };
   });
 };
 
-// 4. EXPORT THE GENERATED BANK
-export const auxiliariesQuestions = generateQuestionBank();
+export const auxiliariesQuestions = generateQuestionBank(rawData);

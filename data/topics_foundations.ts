@@ -1,3 +1,4 @@
+
 import { Polarity } from '../types.ts';
 
 export const foundationsTopic = {
@@ -28,19 +29,35 @@ export const foundationsTopic = {
   proTips: [
     {
       title: "The Contraction Mandate",
-      text: "Negative tags MUST be short! We never say 'is not it?'. We always shrink it to 'isn't it?'. The only exception is 'am I not?' (formal)."
-    },
-    {
-      title: "The 'No Names' Policy",
-      text: "Tags are lazy. They never use names like 'Mary' or 'The Dog'. They only use pronouns: he, she, it, or they."
+      text: "Negative tags MUST be short! Use 'isn't it?' instead of 'is not it?'. The only exception is the formal 'am I not?'."
     },
     {
       title: "The 'I Am' Exception",
-      text: "This is a weird one! 'I am happy' flips to 'aren't I?'. We never say 'amn't I'—it just doesn't exist in standard English!"
+      text: "This is a classic trap! 'I am a student' flips to 'aren't I?'. However, the negative 'I am not late' stays regular: 'am I?'."
     },
     {
-      title: "The Crowds Rule",
-      text: "When a sentence starts with 'Everyone', 'Someone', or 'Nobody', the tag always uses 'they'. (e.g., Everyone is here, aren't they?)"
+      title: "Pronoun Swapping",
+      text: "Never use names in tags. 'Mary' becomes 'she', 'John' becomes 'he', and 'The car' becomes 'it'. Even 'The police' becomes 'they'."
+    },
+    {
+      title: "People vs. Things (Indefinite Pronouns)",
+      text: "Words ending in -one or -body (Everyone, Somebody, No one) use 'they' in the tag. Words ending in -thing (Everything, Nothing) use 'it' in the tag."
+    },
+    {
+      title: "Opinion Clauses (I think...)",
+      text: "If you start with 'I think' or 'I believe', you tag the OTHER clause. 'I think she is late, isn't she?' (Not 'don't I?')."
+    },
+    {
+      title: "This, That, These, Those",
+      text: "'This' and 'That' become 'it' in the tag. 'These' and 'Those' become 'they' in the tag."
+    },
+    {
+      title: "The 'There' Rule",
+      text: "If a sentence starts with 'There' (There is a book), the tag keeps 'there' as the subject (isn't there?)."
+    },
+    {
+      title: "Collective Nouns",
+      text: "Words like 'Staff', 'Team', or 'Police' are usually treated as plural in tags. Use 'they'. (e.g., 'The team are ready, aren't they?')"
     }
   ],
 
@@ -51,9 +68,14 @@ export const foundationsTopic = {
       reason: "The Echo Error: You repeated the positive. You must flip (+) to (-)."
     },
     {
-      bad: "John is tall, isn't John?",
-      good: "John is tall, isn't he?",
-      reason: "Name Repetition: Never repeat the name in the tag. Swap 'John' for 'he'."
+      bad: "Everything is ready, aren't they?",
+      good: "Everything is ready, isn't it?",
+      reason: "Thing Mistake: 'Everything' refers to a situation/thing, so use 'it', not 'they'."
+    },
+    {
+      bad: "I think he's right, don't I?",
+      good: "I think he's right, isn't he?",
+      reason: "Opinion Error: We are confirming the fact (he is right), not the act of thinking."
     }
   ],
 
@@ -73,10 +95,10 @@ export const foundationsTopic = {
       polarity: Polarity.NEGATIVE
     },
     {
-      sentence: "The cat is sleeping",
-      tag: "isn't it?",
+      sentence: "The police have arrived",
+      tag: "haven't they?",
       isCorrect: true,
-      explanation: "'The cat' becomes 'it'. 'Is' becomes 'isn't'.",
+      explanation: "'The police' is treated as a plural group (They).",
       polarity: Polarity.POSITIVE
     }
   ],

@@ -31,32 +31,49 @@ export const auxiliariesTopic = {
   proTips: [
     {
       title: "The 'S' Rule",
-      text: "Look at the main verb. If it ends with an 's' (plays, runs, is), you need the helper with an 's' (does)!"
+      text: "If the main verb has an 's' (plays), the tag uses 'does'. If no 's' (play), use 'do'. If it's past (played), use 'did'."
     },
     {
-      title: "The Time Travel Rule",
-      text: "If the action happened yesterday (Past Tense - ed or irregular), always summon DID. It doesn't matter who the person is."
+      title: "Cracking the 'd Code (Part 1)",
+      text: "If you see 'd followed by a Past Participle/V3 (e.g., She'd eaten), it means HAD. The tag must be 'hadn't she?'."
     },
     {
-      title: "The Stealth Negatives",
-      text: "Words like 'Never', 'Rarely', 'Hardly', and 'Seldom' make the sentence negative ALREADY. This means the tag must be positive! (e.g., He rarely smiles, does he?)"
+      title: "Stealth Negatives (Adverbs)",
+      text: "Never, Seldom, Hardly, Rarely, Scarcely, and Barely make a sentence NEGATIVE. The tag must be POSITIVE. (e.g., He never goes, does he?)"
     },
     {
-      title: "The Visible Ghost",
-      text: "In negative sentences (You don't like apples), the ghost is already visible ('don't'). Just remove the 'n't' for the tag ('do you?')!"
+      title: "The Quantifier Trap (Few/Little)",
+      text: "'Few' and 'Little' mean 'almost none' (Negative sentence -> Positive tag). 'A few' and 'A little' mean 'some' (Positive sentence -> Negative tag)."
+    },
+    {
+      title: "Dare & Need (The Rebels)",
+      text: "If used as verbs (He dares to go), use 'doesn't he?'. If used as modals (He dare not go), use 'dare he?'. Same for 'need' vs 'needn't'."
+    },
+    {
+      title: "Ownership 'Have' vs Helper 'Have'",
+      text: "In ownership (I have a dog), use 'don't I?'. If 'have' is an auxiliary (I have eaten), use 'haven't I?'."
+    },
+    {
+      title: "The 'Neither' Clause",
+      text: "If a sentence starts with 'Neither of us...', the sentence is negative. The tag uses 'we' and is positive. (e.g., 'Neither of us went, did we?')"
     }
   ],
 
   commonMistakes: [
     {
-      bad: "They live here, live they?",
-      good: "They live here, don't they?",
-      reason: "Main Verb Error: You cannot repeat the action verb. You must use a helper (Do)."
+      bad: "He speaks English, isn't he?",
+      good: "He speaks English, doesn't he?",
+      reason: "Verb Repetition: There is no 'is' in the sentence! Summon 'does' for action verbs."
     },
     {
-      bad: "I have a car, haven't I?",
-      good: "I have a car, don't I?",
-      reason: "Possession Trap: In ownership, 'have' is a main verb. We summon 'Don't' to help it."
+      bad: "Few people know, don't they?",
+      good: "Few people know, do they?",
+      reason: "Quantifier Logic: 'Few' is already negative. You need a positive tag."
+    },
+    {
+      bad: "He needn't wait, doesn't he?",
+      good: "He needn't wait, need he?",
+      reason: "Modal Error: 'Needn't' is a modal auxiliary, so it repeats in the tag."
     }
   ],
 
@@ -70,20 +87,18 @@ export const auxiliariesTopic = {
       verbType: "Base (V1)"
     },
     {
-      sentence: "He plays guitar",
-      tag: "doesn't he?",
+      sentence: "He hardly ever studies",
+      tag: "does he?",
       isCorrect: true,
-      explanation: "Verb 'plays' has an 's' ➔ Summon 'Does'. Flip to Negative.",
-      polarity: Polarity.POSITIVE,
-      verbType: "Verb+s (V1+s)"
+      explanation: "'Hardly' makes the sentence negative. Tag must be positive.",
+      polarity: Polarity.NEGATIVE
     },
     {
-      sentence: "They went to the park",
-      tag: "didn't they?",
+      sentence: "Neither of them came",
+      tag: "did they?",
       isCorrect: true,
-      explanation: "Verb 'went' is past tense ➔ Summon 'Did'. Flip to Negative.",
-      polarity: Polarity.POSITIVE,
-      verbType: "Past (V2)"
+      explanation: "'Neither' is negative. Subject is 'they'. Tag is positive.",
+      polarity: Polarity.NEGATIVE
     }
   ]
 };

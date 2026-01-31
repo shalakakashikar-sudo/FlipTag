@@ -4,7 +4,7 @@ export const modalsTopic = {
   id: 'modals',
   title: 'Modal Mastery',
   subtitle: 'The Boomerang Verbs',
-  concept: 'Modals (Can, Will, Should, Must) are "Boomerang Verbs". Unlike normal verbs where you have to summon "Do", modals always come back in the tag! You throw "Can" in the sentence, and "Can\'t" bounces back in the tag.',
+  concept: 'Modals (Can, Will, Should, Must) are "Boomerang Verbs". Unlike normal verbs, you don\'t summon "Do". You throw "Can" in the sentence, and "Can\'t" bounces back in the tag!',
   
   infographicData: {
     title: "The Mirror Effect",
@@ -22,10 +22,10 @@ export const modalsTopic = {
         icon: "🔮"
       },
       { 
-        trigger: "SHOULD", 
-        action: "SHOULDN'T", 
-        color: "#8b5cf6", 
-        icon: "⚖️"
+        trigger: "MUST", 
+        action: "MUSTN'T / ISN'T", 
+        color: "#10b981", 
+        icon: "🛑"
       }
     ],
     ruleSummary: "Don't change the verb! Just flip the polarity."
@@ -33,20 +33,36 @@ export const modalsTopic = {
 
   proTips: [
     {
-      title: "Suggestions with Let's",
-      text: "When you start with 'Let's' (Let us), the tag is always 'shall we?'. It's an invitation to join the action!"
+      title: "Cracking the 'd Code (Part 2)",
+      text: "If you see 'd followed by a Base Verb/V1 (e.g., She'd eat), it means WOULD. The tag must be 'wouldn't she?'."
     },
     {
-      title: "Commands & Requests",
-      text: "When telling someone to do something (Close the door), use 'will you?' in the tag. It's like asking for cooperation."
+      title: "The 'd Special: Better vs Rather",
+      text: "'You'd better' ALWAYS uses 'hadn't you?'. 'You'd rather' ALWAYS uses 'wouldn't you?'. Look at the word immediately after the 'd!"
     },
     {
-      title: "Used To -> Did",
-      text: "The semi-modal 'Used to' acts like the past tense. Use 'didn't' in the tag. (e.g., You used to smoke, didn't you?)"
+      title: "The 'Let's' vs 'Let me' Rule",
+      text: "'Let's' (Let us) = Suggestion -> 'shall we?'. 'Let me/him/them' = Permission -> 'will you?'."
     },
     {
-      title: "The Spelling Trap",
-      text: "English is weird! The negative of 'Will' is 'Won't' (not 'willn't'). The negative of 'Shall' is 'Shan't'."
+      title: "The Imperative Scale",
+      text: "Positive Commands (Stop it) can use 'will you/won't you/can you/could you'. Negative Commands (Don't stop) ALWAYS use 'will you?'."
+    },
+    {
+      title: "The Two Masks of 'Must'",
+      text: "1. Obligation: 'You must go' -> 'mustn't you?'. 2. Deduction (Fact): 'He must be tired' -> 'isn't he?' (Tag the 'be', not the 'must')."
+    },
+    {
+      title: "Ought To",
+      text: "'Ought to' is formal. The tag is 'oughtn't you?' (very formal) or 'shouldn't you?' (common usage)."
+    },
+    {
+      title: "Used To",
+      text: "'Used to' describes a past habit. It behaves like a past tense verb. Tag: 'didn't you?'."
+    },
+    {
+      title: "Needn't vs Don't Need",
+      text: "'You needn't worry' (Modal) -> 'need you?'. 'You don't need to worry' (Verb) -> 'do you?'."
     }
   ],
 
@@ -54,12 +70,17 @@ export const modalsTopic = {
     {
       bad: "We will go, willn't we?",
       good: "We will go, won't we?",
-      reason: "Spelling Error: 'Won't' is the unique contraction for Will + Not."
+      reason: "Spelling: The negative of 'Will' is 'Won't'. The negative of 'Shall' is 'Shan't'."
     },
     {
-      bad: "They must study, don't they?",
-      good: "They must study, mustn't they?",
-      reason: "Modal Loyalty: 'Must' is a modal. It repeats itself. Do not switch to 'Do'."
+      bad: "You'd better run, wouldn't you?",
+      good: "You'd better run, hadn't you?",
+      reason: "Contraction Trap: In 'had better', the 'd stands for 'had', not 'would'."
+    },
+    {
+      bad: "Let's dance, will we?",
+      good: "Let's dance, shall we?",
+      reason: "Suggestion Rule: 'Let's' always takes 'shall we'."
     }
   ],
 
@@ -72,11 +93,18 @@ export const modalsTopic = {
       polarity: Polarity.POSITIVE
     },
     {
-      sentence: "They won't be late",
-      tag: "will they?",
+      sentence: "Open the window",
+      tag: "will you?",
       isCorrect: true,
-      explanation: "Negative 'Won't' flips back to positive 'Will'.",
-      polarity: Polarity.NEGATIVE
+      explanation: "Imperative (Command). 'Will you' makes it polite.",
+      polarity: Polarity.POSITIVE
+    },
+    {
+      sentence: "He'd rather stay",
+      tag: "wouldn't he?",
+      isCorrect: true,
+      explanation: "'d rather = would rather. Tag is 'wouldn't'.",
+      polarity: Polarity.POSITIVE
     }
   ]
 };
