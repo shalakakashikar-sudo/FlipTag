@@ -78,11 +78,11 @@ const rawModalsData: RawModalQ[] = [
   ["MOD_MST_07", "They mustn't see", "must they?", "do they?", "will they?", "must", "Rule: Prohibition. 'Mustn't' ➔ Flip to 'must'.", Polarity.NEGATIVE],
   ["MOD_MST_08", "He mustn't forget", "must he?", "does he?", "will he?", "must", "Rule: Prohibition. 'Mustn't' ➔ Flip to 'must'.", Polarity.NEGATIVE],
   ["MOD_MST_09", "One must obey", "mustn't one?", "mustn't you?", "doesn't one?", "must", "Rule: Subject 'One' repeats. 'Must' flips to 'mustn't'.", Polarity.POSITIVE],
-  ["MOD_MST_10", "They must have left", "haven't they?", "mustn't they?", "didn't they?", "have", "Rule: Deduction about Past. 'Must have' -> Tag the 'Have'.", Polarity.POSITIVE],
-
+  ["MOD_MST_10", "They must have left", "mustn't they?", "haven't they?", "didn't they?", "must", "Rule: Repeat the first auxiliary ('must'), not 'have'. Tag 'mustn't they?'.", Polarity.POSITIVE],
+  
   // --- SECTION 7: MAY / MIGHT (POSSIBILITY) ---
-  ["MOD_MAY_01", "I may come", "mightn't I?", "mayn't I?", "can't I?", "may", "Rule: 'Mayn't' is archaic. Use 'mightn't' (formal) or 'won't' (informal).", Polarity.POSITIVE],
-  ["MOD_MAY_02", "It may rain", "mightn't it?", "mayn't it?", "won't it?", "may", "Rule: Tagging 'may' uses 'mightn't' in formal grammar.", Polarity.POSITIVE],
+  ["MOD_MAY_01", "I may come", "mayn't I?", "mightn't I?", "can't I?", "may", "Rule: Tag repeats the same modal. 'May' flips to 'mayn't I?'.", Polarity.POSITIVE],
+  ["MOD_MAY_02", "It may rain", "mayn't it?", "mightn't it?", "won't it?", "may", "Rule: Tag repeats the same modal. 'May' flips to 'mayn't it?'.", Polarity.POSITIVE],
   ["MOD_MAY_03", "He might be late", "mightn't he?", "mayn't he?", "is he?", "might", "Rule: 'Might' flips to 'mightn't'.", Polarity.POSITIVE],
   ["MOD_MAY_04", "They might join us", "mightn't they?", "didn't they?", "won't they?", "might", "Rule: 'Might' flips to 'mightn't'.", Polarity.POSITIVE],
   ["MOD_MAY_05", "You might want this", "mightn't you?", "don't you?", "wouldn't you?", "might", "Rule: 'Might' flips to 'mightn't'.", Polarity.POSITIVE],
